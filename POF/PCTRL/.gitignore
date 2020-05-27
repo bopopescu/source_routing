@@ -1,0 +1,8 @@
+*.pyc
+*.pyo
+*.py~
+*.html~
+*.js~
+*.project
+*.pydevproject
+*.xml
