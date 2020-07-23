@@ -476,9 +476,9 @@ NX_ROLE_SLAVE = 2
 
 class nx_role_request (nicira_base):
   """
-  Requests master/slave/other role type
+  Requests main/subordinate/other role type
 
-  Can initialize with role=NX_ROLE_x or with, e.g., master=True.
+  Can initialize with role=NX_ROLE_x or with, e.g., main=True.
   """
   subtype = NXT_ROLE_REQUEST
   _MIN_LENGTH = 16 + 4
@@ -488,16 +488,16 @@ class nx_role_request (nicira_base):
 
     if kw.pop("other", False):
       self.role = NX_ROLE_OTHER
-    if kw.pop("master", False):
+    if kw.pop("main", False):
       self.role = NX_ROLE_MASTER
-    if kw.pop("slave", False):
+    if kw.pop("subordinate", False):
       self.role = NX_ROLE_SLAVE
 
   @property
-  def master (self):
+  def main (self):
     return self.role == NX_ROLE_MASTER
   @property
-  def slave (self):
+  def subordinate (self):
     return self.role == NX_ROLE_SLAVE
   @property
   def other (self):
@@ -531,8 +531,8 @@ class nx_role_request (nicira_base):
     Format additional fields as text
     """
     s = prefix + "role: "
-    s += {NX_ROLE_OTHER:"other",NX_ROLE_MASTER:"master",
-        NX_ROLE_SLAVE:"slave"}.get(self.role, str(self.role))
+    s += {NX_ROLE_OTHER:"other",NX_ROLE_MASTER:"main",
+        NX_ROLE_SLAVE:"subordinate"}.get(self.role, str(self.role))
     return s + "\n"
 
 class nx_role_reply (nx_role_request):
@@ -2084,27 +2084,27 @@ class nx_async_config (nicira_base):
   subtype = NXT_SET_ASYNC_CONFIG
   _MIN_LENGTH = 40
   def _init (self, kw):
-    # For master or other role
+    # For main or other role
     self.packet_in_mask = 0
     self.port_status_mask = 0
     self.flow_removed_mask = 0
 
-    # For slave role
-    self.packet_in_mask_slave = 0
-    self.port_status_mask_slave = 0
-    self.flow_removed_mask_slave = 0
+    # For subordinate role
+    self.packet_in_mask_subordinate = 0
+    self.port_status_mask_subordinate = 0
+    self.flow_removed_mask_subordinate = 0
 
-  def set_packet_in (self, bit, master=True, slave=True):
-    if master: self.packet_in_mask |= bit
-    if slave: self.packet_in_mask_slave |= bit
+  def set_packet_in (self, bit, main=True, subordinate=True):
+    if main: self.packet_in_mask |= bit
+    if subordinate: self.packet_in_mask_subordinate |= bit
 
-  def set_port_status (self, bit, master=True, slave=True):
-    if master: self.port_status_mask |= bit
-    if slave: self.port_status_mask_slave |= bit
+  def set_port_status (self, bit, main=True, subordinate=True):
+    if main: self.port_status_mask |= bit
+    if subordinate: self.port_status_mask_subordinate |= bit
 
-  def set_flow_removed (self, bit, master=True, slave=True):
-    if master: selfflow_removed_mask |= bit
-    if slave: self.flow_removed_mask_slave |= bit
+  def set_flow_removed (self, bit, main=True, subordinate=True):
+    if main: selfflow_removed_mask |= bit
+    if subordinate: self.flow_removed_mask_subordinate |= bit
 
   def _eq (self, other):
     """
@@ -2115,15 +2115,15 @@ class nx_async_config (nicira_base):
     for a in "packet_in port_status flow_removed".split():
       a += "_mask"
       if getattr(self, a) != getattr(other, a): return False
-      a += "_slave"
+      a += "_subordinate"
       if getattr(self, a) != getattr(other, a): return False
     return True
 
   def _pack_body (self):
     return struct.pack("!IIIIII",
-        self.packet_in_mask, self.packet_in_mask_slave,
-        self.port_status_mask, self.port_status_mask_slave,
-        self.flow_removed_mask, self.flow_removed_mask_slave)
+        self.packet_in_mask, self.packet_in_mask_subordinate,
+        self.port_status_mask, self.port_status_mask_subordinate,
+        self.flow_removed_mask, self.flow_removed_mask_subordinate)
 
   def _unpack_body (self, raw, offset, avail):
     """
@@ -2133,11 +2133,11 @@ class nx_async_config (nicira_base):
     """
     offset,tmp = of._unpack("!IIIIII", raw, offset)
     self.packet_in_mask          = tmp[0]
-    self.packet_in_mask_slave    = tmp[1]
+    self.packet_in_mask_subordinate    = tmp[1]
     self.port_status_mask        = tmp[2]
-    self.port_status_mask_slave  = tmp[3]
+    self.port_status_mask_subordinate  = tmp[3]
     self.flow_removed_mask       = tmp[4]
-    self.flow_removed_mask_slave = tmp[5]
+    self.flow_removed_mask_subordinate = tmp[5]
 
     return offset
 

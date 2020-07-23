@@ -168,9 +168,9 @@ class PrefsDialog(tkSimpleDialog.Dialog):
 
         tkSimpleDialog.Dialog.__init__(self, parent, title)
 
-    def body(self, master):
+    def body(self, main):
         "Create dialog body"
-        self.rootFrame = master
+        self.rootFrame = main
         self.leftfieldFrame = Frame(self.rootFrame, padx=5, pady=5)
         self.leftfieldFrame.grid(row=0, column=0, sticky='nswe', columnspan=2)
         self.rightfieldFrame = Frame(self.rootFrame, padx=5, pady=5)
@@ -393,8 +393,8 @@ class PrefsDialog(tkSimpleDialog.Dialog):
 class CustomDialog(object):
 
     # TODO: Fix button placement and Title and window focus lock
-    def __init__(self, master, _title):
-        self.top=Toplevel(master)
+    def __init__(self, main, _title):
+        self.top=Toplevel(main)
 
         self.bodyFrame = Frame(self.top)
         self.bodyFrame.grid(row=0, column=0, sticky='nswe')
@@ -412,8 +412,8 @@ class CustomDialog(object):
                     bd=4, command=self.cancelAction)
         canlceButton.grid(row=0, column=1, sticky=W)
 
-    def body(self, master):
-        self.rootFrame = master
+    def body(self, main):
+        self.rootFrame = main
 
     def apply(self):
         self.top.destroy()
@@ -427,15 +427,15 @@ class CustomDialog(object):
 
 class HostDialog(CustomDialog):
 
-    def __init__(self, master, title, prefDefaults):
+    def __init__(self, main, title, prefDefaults):
 
         self.prefValues = prefDefaults
         self.result = None
 
-        CustomDialog.__init__(self, master, title)
+        CustomDialog.__init__(self, main, title)
 
-    def body(self, master):
-        self.rootFrame = master
+    def body(self, main):
+        self.rootFrame = main
         n = Notebook(self.rootFrame)
         self.propFrame = Frame(n)
         self.vlanFrame = Frame(n)
@@ -609,14 +609,14 @@ class HostDialog(CustomDialog):
 
 class SwitchDialog(CustomDialog):
 
-    def __init__(self, master, title, prefDefaults):
+    def __init__(self, main, title, prefDefaults):
 
         self.prefValues = prefDefaults
         self.result = None
-        CustomDialog.__init__(self, master, title)
+        CustomDialog.__init__(self, main, title)
 
-    def body(self, master):
-        self.rootFrame = master
+    def body(self, main):
+        self.rootFrame = main
         self.leftfieldFrame = Frame(self.rootFrame)
         self.rightfieldFrame = Frame(self.rootFrame)
         self.leftfieldFrame.grid(row=0, column=0, sticky='nswe')
@@ -888,43 +888,43 @@ class LinkDialog(tkSimpleDialog.Dialog):
 
         tkSimpleDialog.Dialog.__init__(self, parent, title)
 
-    def body(self, master):
+    def body(self, main):
 
-        self.var = StringVar(master)
-        Label(master, text="Bandwidth:").grid(row=0, sticky=E)
-        self.e1 = Entry(master)
+        self.var = StringVar(main)
+        Label(main, text="Bandwidth:").grid(row=0, sticky=E)
+        self.e1 = Entry(main)
         self.e1.grid(row=0, column=1)
-        Label(master, text="Mbit").grid(row=0, column=2, sticky=W)
+        Label(main, text="Mbit").grid(row=0, column=2, sticky=W)
         if 'bw' in self.linkValues:
             self.e1.insert(0,str(self.linkValues['bw']))
 
-        Label(master, text="Delay:").grid(row=1, sticky=E)
-        self.e2 = Entry(master)
+        Label(main, text="Delay:").grid(row=1, sticky=E)
+        self.e2 = Entry(main)
         self.e2.grid(row=1, column=1)
         if 'delay' in self.linkValues:
             self.e2.insert(0, self.linkValues['delay'])
 
-        Label(master, text="Loss:").grid(row=2, sticky=E)
-        self.e3 = Entry(master)
+        Label(main, text="Loss:").grid(row=2, sticky=E)
+        self.e3 = Entry(main)
         self.e3.grid(row=2, column=1)
-        Label(master, text="%").grid(row=2, column=2, sticky=W)
+        Label(main, text="%").grid(row=2, column=2, sticky=W)
         if 'loss' in self.linkValues:
             self.e3.insert(0, str(self.linkValues['loss']))
 
-        Label(master, text="Max Queue size:").grid(row=3, sticky=E)
-        self.e4 = Entry(master)
+        Label(main, text="Max Queue size:").grid(row=3, sticky=E)
+        self.e4 = Entry(main)
         self.e4.grid(row=3, column=1)
         if 'max_queue_size' in self.linkValues:
             self.e4.insert(0, str(self.linkValues['max_queue_size']))
 
-        Label(master, text="Jitter:").grid(row=4, sticky=E)
-        self.e5 = Entry(master)
+        Label(main, text="Jitter:").grid(row=4, sticky=E)
+        self.e5 = Entry(main)
         self.e5.grid(row=4, column=1)
         if 'jitter' in self.linkValues:
             self.e5.insert(0, self.linkValues['jitter'])
 
-        Label(master, text="Speedup:").grid(row=5, sticky=E)
-        self.e6 = Entry(master)
+        Label(main, text="Speedup:").grid(row=5, sticky=E)
+        self.e6 = Entry(main)
         self.e6.grid(row=5, column=1)
         if 'speedup' in self.linkValues:
             self.e6.insert(0, str(self.linkValues['speedup']))
@@ -955,30 +955,30 @@ class ControllerDialog(tkSimpleDialog.Dialog):
 
         tkSimpleDialog.Dialog.__init__(self, parent, title)
 
-    def body(self, master):
+    def body(self, main):
 
-        self.var = StringVar(master)
-        self.protcolvar = StringVar(master)
+        self.var = StringVar(main)
+        self.protcolvar = StringVar(main)
 
         rowCount=0
         # Field for Hostname
-        Label(master, text="Name:").grid(row=rowCount, sticky=E)
-        self.hostnameEntry = Entry(master)
+        Label(main, text="Name:").grid(row=rowCount, sticky=E)
+        self.hostnameEntry = Entry(main)
         self.hostnameEntry.grid(row=rowCount, column=1)
         self.hostnameEntry.insert(0, self.ctrlrValues['hostname'])
         rowCount+=1
 
         # Field for Remove Controller Port
-        Label(master, text="Controller Port:").grid(row=rowCount, sticky=E)
-        self.e2 = Entry(master)
+        Label(main, text="Controller Port:").grid(row=rowCount, sticky=E)
+        self.e2 = Entry(main)
         self.e2.grid(row=rowCount, column=1)
         self.e2.insert(0, self.ctrlrValues['remotePort'])
         rowCount+=1
 
         # Field for Controller Type
-        Label(master, text="Controller Type:").grid(row=rowCount, sticky=E)
+        Label(main, text="Controller Type:").grid(row=rowCount, sticky=E)
         controllerType = self.ctrlrValues['controllerType']
-        self.o1 = OptionMenu(master, self.var, "Remote Controller", "In-Band Controller", "OpenFlow Reference", "OVS Controller")
+        self.o1 = OptionMenu(main, self.var, "Remote Controller", "In-Band Controller", "OpenFlow Reference", "OVS Controller")
         self.o1.grid(row=rowCount, column=1, sticky=W)
         if controllerType == 'ref':
             self.var.set("OpenFlow Reference")
@@ -991,12 +991,12 @@ class ControllerDialog(tkSimpleDialog.Dialog):
         rowCount+=1
 
         # Field for Controller Protcol
-        Label(master, text="Protocol:").grid(row=rowCount, sticky=E)
+        Label(main, text="Protocol:").grid(row=rowCount, sticky=E)
         if 'controllerProtocol' in self.ctrlrValues:
             controllerProtocol = self.ctrlrValues['controllerProtocol']
         else:
             controllerProtocol = 'tcp'
-        self.protcol = OptionMenu(master, self.protcolvar, "TCP", "SSL")
+        self.protcol = OptionMenu(main, self.protcolvar, "TCP", "SSL")
         self.protcol.grid(row=rowCount, column=1, sticky=W)
         if controllerProtocol == 'ssl':
             self.protcolvar.set("SSL")
@@ -1005,7 +1005,7 @@ class ControllerDialog(tkSimpleDialog.Dialog):
         rowCount+=1
 
         # Field for Remove Controller IP
-        remoteFrame= LabelFrame(master, text='Remote/In-Band Controller', padx=5, pady=5)
+        remoteFrame= LabelFrame(main, text='Remote/In-Band Controller', padx=5, pady=5)
         remoteFrame.grid(row=rowCount, column=0, columnspan=2, sticky=W)
 
         Label(remoteFrame, text="IP Address:").grid(row=0, sticky=E)
@@ -2462,7 +2462,7 @@ class MiniEdit( Frame ):
 
         prefDefaults = self.hostOpts[name]
         hostBox = HostDialog(self, title='Host Details', prefDefaults=prefDefaults)
-        self.master.wait_window(hostBox.top)
+        self.main.wait_window(hostBox.top)
         if hostBox.result:
             newHostOpts = {'nodeNum':self.hostOpts[name]['nodeNum']}
             newHostOpts['sched'] = hostBox.result['sched']
@@ -2504,7 +2504,7 @@ class MiniEdit( Frame ):
 
         prefDefaults = self.switchOpts[name]
         switchBox = SwitchDialog(self, title='Switch Details', prefDefaults=prefDefaults)
-        self.master.wait_window(switchBox.top)
+        self.main.wait_window(switchBox.top)
         if switchBox.result:
             newSwitchOpts = {'nodeNum':self.switchOpts[name]['nodeNum']}
             newSwitchOpts['switchType'] = switchBox.result['switchType']

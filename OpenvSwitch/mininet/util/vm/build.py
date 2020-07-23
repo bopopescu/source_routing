@@ -310,7 +310,7 @@ install
 cdrom
 #System bootloader configuration
 bootloader --location=mbr
-#Clear the Master Boot Record
+#Clear the Main Boot Record
 zerombr yes
 #Partition clearing information
 clearpart --all --initlabel
@@ -585,7 +585,7 @@ def useTest( vm, prompt=Prompt ):
 runTest = useTest
 
 def checkOutBranch( vm, branch, prompt=Prompt ):
-    # This is a bit subtle; it will check out an existing branch (e.g. master)
+    # This is a bit subtle; it will check out an existing branch (e.g. main)
     # if it exists; otherwise it will create a detached branch.
     # The branch will be rebased to its parent on origin.
     # This probably doesn't matter since we're running on a COW disk
@@ -606,7 +606,7 @@ def interact( vm, tests, pre='', post='', prompt=Prompt ):
     log( '* Waiting for output' )
     vm.expect( prompt )
     log( '* Fetching Mininet VM install script' )
-    branch = Branch if Branch else 'master'
+    branch = Branch if Branch else 'main'
     vm.sendline( 'wget '
                  'https://raw.github.com/mininet/mininet/%s/util/vm/'
                  'install-mininet-vm.sh' % branch )

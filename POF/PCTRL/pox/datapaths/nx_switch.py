@@ -18,7 +18,7 @@ import pox.openflow.libopenflow_01 as of
 import pox.openflow.nicira_ext as nx
 from pox.datapaths.switch import SoftwareSwitch, OFConnection
 
-_slave_blacklist = set([of.ofp_flow_mod, of.ofp_packet_out, of.ofp_port_mod,
+_subordinate_blacklist = set([of.ofp_flow_mod, of.ofp_packet_out, of.ofp_port_mod,
                         of.ofp_barrier_request])
 _messages_for_all = set([of.ofp_port_status])
 
@@ -35,17 +35,17 @@ class NXSoftwareSwitch (SoftwareSwitch):
 
   In the beginning, all controllers start out as equals (ROLE_OTHER). Through
   the NX vendor message role_request, one controller can be promoted to
-  ROLE_MASTER, in which case all other controllers are downgraded to slave
+  ROLE_MASTER, in which case all other controllers are downgraded to subordinate
   status.
 
   The switch doesn't accept state-mutating messages (e.g., FLOW_MOD, see
-  _slave_blacklist) from slave controllers.
+  _subordinate_blacklist) from subordinate controllers.
 
   Messages are distributed to controllers according to their type:
     - symmetric message replies are sent to the controller that initiated them
       (e.g., STATS_REQUEST -> REPLY)
     - port_status messages are distributed to all controllers
-    - all other messages are distributed to the master controller, or if none
+    - all other messages are distributed to the main controller, or if none
       is present, any controller in ROLE_OTHER
   """
 
@@ -71,7 +71,7 @@ class NXSoftwareSwitch (SoftwareSwitch):
 
     self.connection_in_action = connection
     if not self.check_rights(msg, connection):
-      self.log.warn("Message %s not allowed for slave controller %d", msg,
+      self.log.warn("Message %s not allowed for subordinate controller %d", msg,
                     connection.ID)
       self.send_vendor_error(connection)
     else:
@@ -83,7 +83,7 @@ class NXSoftwareSwitch (SoftwareSwitch):
     if self.role_by_conn[connection.ID] != nx.ROLE_SLAVE:
       return True
     else:
-      return not type(ofp) in _slave_blacklist
+      return not type(ofp) in _subordinate_blacklist
 
   def send_vendor_error (self, connection):
     err = of.ofp_error(type=of.OFPET_BAD_REQUEST, code=of.OFPBRC_BAD_VENDOR)
@@ -101,11 +101,11 @@ class NXSoftwareSwitch (SoftwareSwitch):
       self.connection_in_action.send(message)
       connections_used.append(self.connection_in_action)
     else:
-      masters = [c for c in self.connections
+      mains = [c for c in self.connections
                  if self.role_by_conn[c.ID] == nx.ROLE_MASTER]
-      if len(masters) > 0:
-        masters[0].send(message)
-        connections_used.append(masters[0])
+      if len(mains) > 0:
+        mains[0].send(message)
+        connections_used.append(mains[0])
       else:
         others = [c for c in self.connections
                   if self.role_by_conn[c.ID] == nx.ROLE_OTHER]
